@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Add Location</h1>
+            <form action="" id="form_search">
+                <label for="search-term">Search for city or area</label>
+                <div class="form-row">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="e.g. Lagos"
+                    name="search-term" id="search-term" autofocus>
+                    <button type="submit">Search</button>
+                </div>
+                <p class="form-err-msg"></p>
+            </form>
+            
+        </header>
+
+        <section>
+            <ul class="cities">
+                <li>
+                    <i class="fas fa-sun"></i>
+                    <div>
+                        <h2>21<sup>&deg</sup></h2>
+                        <p class="city_weather">SUNNY</p>
+                        <h3><span class="city-name">Lagos</span>
+                            <span class="city-country">Nigeria</span></h3>
+                    </div>
+                </li>
+
+                <li>
+                    <i class="fas fa-sun"></i>
+                    <div>
+                        <h2>21<sup>&deg</sup></h2>
+                        <p class="city_weather">SUNNY</p>
+                        <h3><span class="city-name">Lagos</span>
+                            <span class="city-country">Nigeria</span></h3>
+                    </div>
+                </li>
+
+                <li>
+                    <i class="fas fa-sun"></i>
+                    <div>
+                        <h2>21<sup>&deg</sup></h2>
+                        <p class="city_weather">SUNNY</p>
+                        <h3><span class="city-name">Lagos</span>
+                            <span class="city-country">Nigeria</span></h3>
+                    </div>
+                </li>
+            </ul>
+        </section>
+
+        <footer>
+            <p>
+                <small>Design and code by <a href="">Pamcodes</a></small>
+            </p>
+        </footer>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
