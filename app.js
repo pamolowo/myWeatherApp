@@ -1,131 +1,73 @@
-const weatherApi = {
-    key: '56b1b8b2052cc833db072aca7caa06c3',
-    baseUrl: 'https://api.openweathermap.org/data/2.5/weather'
-  }
-  
-  //anonymous function
-  //adding event listener key press of enter
-  let searchInputBox = document.getElementById('input-box');
-  searchInputBox.addEventListener('keypress', (event) => {
-    if (event.key === 'Enter') {
-      getWeatherReport(searchInputBox.value);
+const wrapper = document.querySelector(".wrapper")
+    inputPart = document.querySelector(".input-part")
+infoText = document.querySelector(".info-text")
+inputField = document.querySelector("input")
+getLocationBtn = document.querySelector("button")
+arrowBack = wrapper.querySelector("header i")
+weatherIcon = document.querySelector("weather-part img")
+
+//..api 
+let api
+var apiKey = "5c37294524c56b2e84a0ae6df81e3e45"
+
+function requestApi(city){
+    //..addded {&units=metric} to the api to round up the number to the nearest 
+    api = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`
+    fectchWeatherData()
+}
+
+function fectchWeatherData(){
+    infoText.innerText="Getting weather info..."
+    infoText.classList.add("pending")
+    //...get server and return api response
+    fetch(api).then(response => response.json()).
+    then(result => weatherDetails(result)) 
+}
+
+function weatherDetails(info){
+    infoText.classList.replace("pending", "error") //..our css style changes the text info background 
+    if(info.cod == "404"){ //..cod is an object called from the weather api
+        infoText.innerText = `You entered ${inputField.value} which isn't a valid city` //..checks for validation
+    } else{
+         //..get api data to properties in info-text   
+        const city = info.name
+        const country = info.sys.country
+        const {description, id} = info.weather[0]
+        const{feels_like,humidity, temp} = info.main
+
+        //..parse the above values into the html elements 
+        wrapper.querySelector(".temp, .numb").innerText = Math.floor(temp) //..round up number to nearest Integer
+        wrapper.querySelector(".weather").innerHTML = description
+        wrapper.querySelector(".location span").innerHTML = `${city}, ${country}`
+        wrapper.querySelector(".temp .numb-2").innerHTML = Math.floor(feels_like)
+        wrapper.querySelector(".humidity span").innerHTML = `${humidity}%`
+
+        infoText.classList.remove("pending", "error") //..if we get the correct city from the api we hide pending and error message
+        wrapper.classList.add("active") //..show the dashboard which displays the weather info
     }
-  })
-  
-  
-  //get weather report
-  
-  function getWeatherReport(city) {
-    fetch(`${weatherApi.baseUrl}?q=${city}&appid=${weatherApi.key}&units=metric`)  // fetch method fetching the data from  base url ...metric is used for unit in celcius......here i am appending the base url to get data by city name .  
-        .then(weather => {   //weather is from api
-            return weather.json(); // return data from api in JSON
-        }).then(showWeaterReport);  // calling showweatherreport function
-  
-  }
-  
-  //show weather report
-  
-  function showWeaterReport(weather) {
-    let city_code=weather.code;
-    if(city_code==='400'){ 
-        swal("Empty Input", "Please enter any city", "error");
-        reset();
-    }else if(city_code==='404'){
-        swal("Bad Input", "entered city didn't matched", "warning");
-        reset();
+}
+
+getLocationBtn.addEventListener("click", ()=>{
+    if(navigator.geolocation){ //..if user's browser supports geolocation
+        navigator.geolocation.getCurrentPosition(onSuccess, onError)
+    } else {
+        alert("Browser doesn't support geolocation api")
     }
-    else{
-  
-    // console.log(weather.cod);
-    // console.log(weather);  
-    let op = document.getElementById('weather-body');
-    op.style.display = 'block';
-    let todayDate = new Date();
-    let parent=document.getElementById('parent');
-    let weather_body = document.getElementById('weather-body');
-    weather_body.innerHTML =
-        `
-    <div class="location-deatils">
-        <div class="city" id="city">${weather.name}, ${weather.sys.country}</div>
-        <div class="date" id="date"> ${dateManage(todayDate)}</div>
-    </div>
-    <div class="weather-status">
-        <div class="temp" id="temp">${Math.round(weather.main.temp)}&deg;C </div>
-        <div class="weather" id="weather"> ${weather.weather[0].main} <i class="${getIconClass(weather.weather[0].main)}"></i>  </div>
-        <div class="min-max" id="min-max">${Math.floor(weather.main.temp_min)}&deg;C (min) / ${Math.ceil(weather.main.temp_max)}&deg;C (max) </div>
-        <div id="updated_on">Updated as of ${getTime(todayDate)}</div>
-    </div>
-    <hr>
-    <div class="day-details">
-        <div class="basic">Feels like ${weather.main.feels_like}&deg;C | Humidity ${weather.main.humidity}%  <br> Pressure ${weather.main.pressure} mb | Wind ${weather.wind.speed} KMPH</div>
-    </div>
-    `;
-    parent.append(weather_body);
-    changeBg(weather.weather[0].main);
-    reset();
-    }
-  }
+})
 
 
 
+function onSuccess(position){
+    const {latitude, longitude} = position.coords //..getting the lat and long from coordinator object
+    api = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`
+    //..addded {&units=metric} to the api to round up the number
+    fectchWeatherData()
+}
+
+function onError(error){
+  infoText.innerText = error.message //..html text will display error message
+  infoText.classList.add("error")
+}
 
 
 
-
-
-// const form = document.querySelector("#form_search");
-// const input = document.querySelector("#search-term");
-// const msg = document.querySelector(".form-err-msg");
-// const list = document.querySelector(".cities");
-
-
-// const apiKey = "d9c877a16e54d5b2e6758b72d1668057";
-
-
-// form.addEventListener("submit", e =>{
-//     e.preventDefault()
-
-//     // msg.textContent = ""
-//     // msg.classList.remove('visible')
-
-//     let inputVal = input.value
-
-//     const listItemsArray = Array.from(list.querySelectorAll('.cities li'))
-
-//     if(listItemsArray.length > 0){
-//         const filteredArray = listItemsArray.filter(element =>{
-//             let content = ''
-//             let cityName = element.querySelector('.city-name').textContent.toLowerCase()
-//             let cityCountry = element.querySelector('.city-country').textContent.toLowerCase()
-
-
-//             if (inputVal.includes(',')){
-//                 if(inputVal.split(',')[1].length > 2){
-//                     inputVal = input.split(',')[0]
-    
-//                     content = cityName
-//                 }else{
-//                     content = `${cityName}, ${cityCountry}`
-//                 }
-//             }else{
-//                 content = cityName
-//             }
-//             return content = inputVal.toLowerCase()
-//         })
-
-//     //  console.log(filteredArray);
-//     if (filteredArray.length > 0){
-//         msg.textContent = `Do you want to know more about the city
-//         ${filteredArray[0].querySelector(".city-name").textContent}
-//         click more below`;
-//         msg.classList.add('visible')
-
-//         form.reset()
-//         input.focus()
-
-//         return
-//     }
-//     }
-// const url = `https://api.openwathermap.org/data/2.5/weather?q=${inputVal}&appid=${apiKey}&units=metric`
-
-// })
